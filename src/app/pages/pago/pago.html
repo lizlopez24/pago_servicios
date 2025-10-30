@@ -1,6 +1,33 @@
 <h2 class="title">Pago de Servicios</h2>
-
 <div class="card">
+  <h3 class="subtitle">Validar cédula</h3>
+
+  <form [formGroup]="cedulaForm" (ngSubmit)="validarCedula()" class="form">
+    <div class="form-grid one-col">
+      <div class="field">
+        <label for="cedula">Cédula</label>
+        <input id="cedula" type="text" formControlName="cedula" placeholder="Ej: 1728596421" />
+        <div class="hint error" *ngIf="cedulaForm.get('cedula')?.touched && cedulaForm.get('cedula')?.invalid">
+          {{ cedulaForm.get('cedula')?.errors?.['required'] ? 'La cédula es obligatoria.' : '' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" [disabled]="cedulaForm.invalid || isValidatingCedula">
+        {{ isValidatingCedula ? 'Validando…' : 'Validar' }}
+      </button>
+    </div>
+
+    <div class="alert success" *ngIf="usuario">
+      <strong>¡Exitoso!</strong> Se ha validado el usuario.
+    </div>
+
+    <div class="inline-status error" *ngIf="errorMsg && !usuario">{{ errorMsg }}</div>
+  </form>
+</div>
+
+<div class="card" *ngIf="usuario">
   <h3 class="subtitle">Consulta de Contrato</h3>
 
   <form [formGroup]="consulForm" (ngSubmit)="consultar()" class="form">
@@ -47,25 +74,51 @@
   </div>
 
   <div class="result-grid">
-    <div class="result-item">
-      <div class="label">N° de contrato: {{ pago.numeroContrato }}</div>
-    </div>
-    <div class="result-item">
-      <div class="label">Descripción: {{ pago.descripcion }}</div>
-    </div>
-    <div class="result-item">
-      <div class="label">Fecha de vencimiento: {{ pago.fechaVencimiento | date:'mediumDate' }}</div>
-    </div>
-    
-    <div class="result-item">
-      <div class="label" style="font-weight: bold;" >Valor a pagar: {{ pago.valorPagar | currency:'USD':'symbol':'1.2-2' }}</div>
-    </div>
+    <div class="result-item"><div class="label">N° de contrato:</div><div class="value">{{ pago.numeroContrato }}</div></div>
+    <div class="result-item"><div class="label">Descripción:</div><div class="value">{{ pago.descripcion }}</div></div>
+    <div class="result-item"><div class="label">Fecha de vencimiento:</div>
+      <div class="value">{{ pago.fechaVencimiento | date:'mediumDate' }}</div></div>
+    <div class="result-item"><div class="label">Valor a pagar:</div>
+      <div class="value strong">{{ pago.valorPagar | currency:'USD':'symbol':'1.2-2' }}</div></div>
   </div>
 
   <div class="result-actions">
     <button type="button" class="secondary" (click)="limpiar()">Nueva consulta</button>
-    <button type="button" class="primary" [disabled]="pago.valorPagar === 0" (click)="pagar()">
-      Pagar ahora
+    <button type="button" class="primary"
+            [disabled]="pago.valorPagar === 0 || isPaying"
+            (click)="pagar()">
+      {{ isPaying ? 'Procesando pago…' : 'Pagar ahora' }}
     </button>
+  </div>
+
+  <div class="inline-status" *ngIf="isPaying">
+    <span class="spinner"></span> Registrando pago…
+  </div>
+</div>
+
+<div class="dialog-backdrop" *ngIf="showReceipt" (click)="cerrarRecibo()"></div>
+<div class="dialog" *ngIf="showReceipt" role="dialog" aria-modal="true" aria-labelledby="reciboTitle">
+  <div class="dialog-header">
+    <h3 id="reciboTitle">Recibo de pago</h3>
+    <button type="button" class="icon-close" (click)="cerrarRecibo()" aria-label="Cerrar">×</button>
+  </div>
+
+  <div class="dialog-body" *ngIf="receipt">
+    <div class="grid">
+      <div><strong>Cliente</strong><div>{{ receipt.clienteNombre }}</div></div>
+      <div><strong>Servicio</strong><div>{{ receipt.servicioNombre }}</div></div>
+      <div><strong>N° contrato</strong><div>{{ receipt.numeroContrato }}</div></div>
+      <div><strong>Valor pagado</strong><div>{{ receipt.valorPagado | currency:'USD':'symbol':'1.2-2' }}</div></div>
+      <div><strong>Fecha vencimiento</strong><div>{{ receipt.fechaVencimiento | date:'mediumDate' }}</div></div>
+      <div><strong>Fecha de pago</strong><div>{{ receipt.fechaPago | date:'medium' }}</div></div>
+      <div class="wide"><strong>Descripción</strong><div>{{ receipt.descripcion }}</div></div>
+      <div class="wide info"><strong>Saldo actual del cliente</strong>
+        <div class="saldo">{{ receipt.saldoActual | currency:'USD':'symbol':'1.2-2' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog-actions">
+    <button type="button" class="primary" (click)="cerrarRecibo()">Aceptar</button>
   </div>
 </div>

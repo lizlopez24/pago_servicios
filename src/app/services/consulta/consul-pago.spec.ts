@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-
 import { ConsulPago } from './consul-pago';
+
 
 describe('ConsulPago', () => {
   let service: ConsulPago;

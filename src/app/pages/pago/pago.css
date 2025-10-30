@@ -110,3 +110,55 @@ button.primary { background: #2f8f2f; }
 .result-actions {
   display: flex; gap: .5rem; justify-content: flex-end; margin-top: .75rem;
 }
+.alert {
+  margin-top: .5rem;
+  padding: .5rem .75rem;
+  border-radius: 8px;
+  font-size: .9rem;
+  border: 1px solid transparent;
+}
+.alert.success {
+  background: #e6f4ea;
+  color: #1e7e34;
+  border-color: #c5e6cd;
+}
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  z-index: 1001;
+}
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.icon-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+.dialog-actions {
+  text-align: right;
+  margin-top: 20px;
+}
+.saldo {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #006600;
+}
