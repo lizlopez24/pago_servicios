@@ -1,0 +1,34 @@
+<h2>Pago de Servicios</h2>
+<div class="card">
+  <h3>Consulta de Contrato</h3>
+
+  <form [formGroup]="consulForm" (ngSubmit)="consultar()">
+    <div class="row">
+      <label for="servicios">Servicio: </label>
+      <select id="servicios" formControlName="servicioId">
+        <option value="">Selecciona un servicio</option>
+        <option *ngFor="let t of tipos" [value]="t.id">{{ t.nombre }}</option>
+      </select>
+      <small *ngIf="consulForm.get('servicioId')?.touched && consulForm.get('servicioId')?.invalid" class="error">
+        Selecciona un servicio válido.
+      </small>
+    </div>
+
+    <div class="row">
+      <label for="numero">N° de Contrato: </label>
+      <input
+        id="numero"
+        type="text"
+        formControlName="numeroContrato"
+        placeholder="Cuenta contrato"
+      />
+      <small *ngIf="consulForm.get('numeroContrato')?.touched && consulForm.get('numeroContrato')?.invalid" class="error">
+        El número de contrato es obligatorio.
+      </small>
+    </div>
+
+    <div class="actions">
+      <button type="submit" [disabled]="consulForm.invalid">Actualizar</button>
+    </div>
+  </form>
+</div>
