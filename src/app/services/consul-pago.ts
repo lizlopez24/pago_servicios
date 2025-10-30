@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-export interface Pago{
+export interface ConsulPago{
   descripcion:string,
   fechaVencimiento:string,
   numeroContrato:string,
@@ -17,8 +17,8 @@ export class ConsulPago {
 
     constructor(private http:HttpClient){}
 
-  getPago(contrato: string): Observable<Pago>{
+  getPago(contrato: string): Observable<ConsulPago>{
     console.log(contrato);
-    return this.http.get<Pago>(`${this.apiUrl}/${contrato}`);
+    return this.http.get<ConsulPago>(`${this.apiUrl}/${contrato}`);
   }
 }

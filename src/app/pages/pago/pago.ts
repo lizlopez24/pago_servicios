@@ -3,6 +3,7 @@ import { Catalogo } from '../../services/catalogo';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConsulPago } from '../../services/consul-pago';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-pago',
@@ -11,10 +12,17 @@ import { ConsulPago } from '../../services/consul-pago';
   styleUrl: './pago.css',
 })
 export class Pago {
-  consulForm!: FormGroup;
+  
   constructor(private fb: FormBuilder,private catalogo: Catalogo, private consul:ConsulPago){};
-  tipos: Catalogo[] = [];
 
+  tipos: Catalogo[] = [];
+  
+  consulForm!: FormGroup;
+  isLoading = false;
+  errorMsg: string | null = null;
+
+  pago: ConsulPago | null = null;
+  
   ngOnInit():void{
     this.consulForm = this.fb.group({
       servicioId: ['', Validators.required],
@@ -40,11 +48,17 @@ export class Pago {
       this.consulForm.markAllAsTouched();
       return;
     }
+
+    this.isLoading = true;
+    this.errorMsg = null;
+    this.pago = null;
+
   const payload = this.consulForm.value;
 
-  this.consul.getPago(payload.numeroContrato).subscribe({
+  this.consul.getPago(payload.numeroContrato).pipe(finalize(() => (this.isLoading = false))).
+  subscribe({
       next: (resp) => {
-        console.log('Respuesta del backend:', resp);
+        this.pago=resp;
       },
       error: (err) => {
         console.error('Error al consultar el pago', err);
@@ -52,4 +66,17 @@ export class Pago {
     });
   }
 
+
+    pagar(): void {
+    if (!this.pago) return;
+    // Aquí puedes redirigir a pasarela o invocar otro endpoint
+    // this.pagoSvc.iniciarPago(this.pago).subscribe(...)
+    alert('Simulación de pago iniciada.');
+  }
+
+    limpiar(): void {
+    this.consulForm.reset();
+    this.pago = null;
+    this.errorMsg = null;
+  }
 }

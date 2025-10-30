@@ -1,34 +1,71 @@
-<h2>Pago de Servicios</h2>
+<h2 class="title">Pago de Servicios</h2>
+
 <div class="card">
-  <h3>Consulta de Contrato</h3>
+  <h3 class="subtitle">Consulta de Contrato</h3>
 
-  <form [formGroup]="consulForm" (ngSubmit)="consultar()">
-    <div class="row">
-      <label for="servicios">Servicio: </label>
-      <select id="servicios" formControlName="servicioId">
-        <option value="">Selecciona un servicio</option>
-        <option *ngFor="let t of tipos" [value]="t.id">{{ t.nombre }}</option>
-      </select>
-      <small *ngIf="consulForm.get('servicioId')?.touched && consulForm.get('servicioId')?.invalid" class="error">
-        Selecciona un servicio válido.
-      </small>
-    </div>
+  <form [formGroup]="consulForm" (ngSubmit)="consultar()" class="form">
+    <div class="form-grid">
+      <div class="field">
+        <label for="servicios">Servicio</label>
+        <select id="servicios" formControlName="servicioId">
+          <option value="">Selecciona un servicio</option>
+          <option *ngFor="let t of tipos" [value]="t.id">{{ t.nombre }}</option>
+        </select>
+        <div class="hint error" *ngIf="consulForm.get('servicioId')?.touched && consulForm.get('servicioId')?.invalid">
+          Selecciona un servicio válido.
+        </div>
+      </div>
 
-    <div class="row">
-      <label for="numero">N° de Contrato: </label>
-      <input
-        id="numero"
-        type="text"
-        formControlName="numeroContrato"
-        placeholder="Cuenta contrato"
-      />
-      <small *ngIf="consulForm.get('numeroContrato')?.touched && consulForm.get('numeroContrato')?.invalid" class="error">
-        El número de contrato es obligatorio.
-      </small>
+      <div class="field">
+        <label for="numero">N° de Contrato</label>
+        <input id="numero" type="text" formControlName="numeroContrato" placeholder="Cuenta contrato" />
+        <div class="hint error" *ngIf="consulForm.get('numeroContrato')?.touched && consulForm.get('numeroContrato')?.invalid">
+          El número de contrato es obligatorio.
+        </div>
+      </div>
     </div>
 
     <div class="actions">
-      <button type="submit" [disabled]="consulForm.invalid">Actualizar</button>
+      <button type="submit" [disabled]="consulForm.invalid || isLoading">
+        {{ isLoading ? 'Consultando…' : 'Consultar' }}
+      </button>
     </div>
+
+    <div class="inline-status" *ngIf="isLoading">
+      <span class="spinner"></span> Consultando información…
+    </div>
+    <div class="inline-status error" *ngIf="errorMsg">{{ errorMsg }}</div>
   </form>
+</div>
+
+<div class="result-card" *ngIf="pago">
+  <div class="result-header">
+    <h3>Información del Pago</h3>
+    <span class="badge" [class.badge-ok]="pago.valorPagar" [class.badge-warn]="pago.valorPagar === 0">
+      Estado: {{ pago.valorPagar > 0 ? 'Pendiente' : 'Sin deuda' }}
+    </span>
+  </div>
+
+  <div class="result-grid">
+    <div class="result-item">
+      <div class="label">N° de contrato: {{ pago.numeroContrato }}</div>
+    </div>
+    <div class="result-item">
+      <div class="label">Descripción: {{ pago.descripcion }}</div>
+    </div>
+    <div class="result-item">
+      <div class="label">Fecha de vencimiento: {{ pago.fechaVencimiento | date:'mediumDate' }}</div>
+    </div>
+    
+    <div class="result-item">
+      <div class="label" style="font-weight: bold;" >Valor a pagar: {{ pago.valorPagar | currency:'USD':'symbol':'1.2-2' }}</div>
+    </div>
+  </div>
+
+  <div class="result-actions">
+    <button type="button" class="secondary" (click)="limpiar()">Nueva consulta</button>
+    <button type="button" class="primary" [disabled]="pago.valorPagar === 0" (click)="pagar()">
+      Pagar ahora
+    </button>
+  </div>
 </div>
